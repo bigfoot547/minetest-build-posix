@@ -49,7 +49,7 @@ fi
 echo -e "\e[1mRunning CMAKE | 4 of 9\e[0m"
 cmake . -DENABLE_GETTEXT=1 -DENABLE_FREETYPE=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1
 echo -e "\e[1mCompiling | 5 of 9\e[0m"
-make -j 4
+make -j$(grep -c processor /proc/cpuinfo)
 cd games
 echo -e "\e[1mRemoving old subgame | 6 of 9\e[0m"
 rm --interactive=never -r minetest_game
