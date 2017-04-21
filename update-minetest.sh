@@ -19,12 +19,15 @@ fi
 
 if [ "$1" == "--mtgame-upd" ]; then
 	cd
-	cd minetest
+	cd minetest/games
 	echo -e "\e[1mRemoving old subgame | 1 of 3\e[0m"
 	rm -r --interactive=none minetest_game
 	echo -e "\e[1mCloning new subgame | 2 of 3\e[0m"
 	git clone https://github.com/minetest/minetest_game
-	echo -e "\e[1;32mDONE!\e[0;1m | 3 of 3\e[0m"
+	echo -e "\e[1mCleaning up! | 3 of 3\e[0m"
+	cd minetest_game
+	git gc
+	echo -e "\e[1;32mDONE!\e[0;1m\e[0m"
 	exit 0
 fi
 
@@ -43,13 +46,18 @@ if [ "$1" == "--clone" ]; then
 	cd minetest
 	echo -e "\e[1mCloning Complete | 3 of 9 | \e[32mDONE!\e[0m"
 else
-	echo -e "\e[1mPulling Minetest | 3 of 9\e[0m"
+	echo -e "\e[1mMoving to branch \`master' | 3 of 9 | 1 of 3\e[0m"
+	git checkout master
+	echo -e "\e[1mFetching Minetest | 3 of 9 | 2 of 3\e[0m"
+	git fetch
+	echo -e "\e[1mPulling Minetest | 3 of 9 | 3 of 3\e[0m"
 	git pull
+	echo -e "\e[1mDone getting minetest, now compiling. | 3 of 9 | \e[32mDONE!\e[0m"
 fi
 echo -e "\e[1mRunning CMAKE | 4 of 9\e[0m"
-cmake . -DENABLE_GETTEXT=1 -DENABLE_FREETYPE=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1
+cmake . -DENABLE_GETTEXT=1 -DENABLE_FREETYPE=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1 -DCMAKE_BUILD_TYPE=Release
 echo -e "\e[1mCompiling | 5 of 9\e[0m"
-make -j$(grep -c processor /proc/cpuinfo)
+make -j 4
 cd games
 echo -e "\e[1mRemoving old subgame | 6 of 9\e[0m"
 rm --interactive=never -r minetest_game
@@ -58,5 +66,12 @@ git clone https://github.com/minetest/minetest_game.git
 echo -e "\e[1mRemoving Preview Clientmod | 8 of 9\e[0m"
 cd ../clientmods
 rm -r --interactive=never preview
-echo -e "\e[1;32mDONE!\e[0;1m | 9 of 9\e[0m"
+echo -e "\e[1mCleaning up \`minetest_game' | 9 of 9 | 1 of 2\e[0m"
+cd ../games/minetest_game
+git gc
+echo -e "\e[1mCleaning up \`minetest' | 9 of 9 | 2 of 2\e[0m"
+cd ../..
+git gc
+echo -e "\e[1mDone cleaning up! | 9 of 9 | \e[32mDONE!\e[0m"
+echo -e "\e[1;32mDONE!\e[0;1m\e[0m"
 exit 0
